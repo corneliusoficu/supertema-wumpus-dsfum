@@ -32,19 +32,14 @@ void generate_matrix(char *matrix)
     }
 }
 
-int16_t* find_neighbours(int16_t cell)
+void find_neighbours(int16_t *neighbours, int16_t cell)
 {
-    int16_t *neighbours = (int16_t*) malloc(4 * sizeof(int16_t));
     uint8_t index = random(0,4);
-    Serial.println(index);
 
     neighbours[    index    ] = ((cell - (2 * NR_COLS)) <= 0)? (-1) : (cell - 2 * NR_COLS);   //NORTH
     neighbours[(index+1) % 4] = (cell % NR_COLS == NR_COLS - 1)? (-1) : (cell + 2);           //EAST
     neighbours[(index+2) % 4] = (cell / NR_COLS == NR_ROWS - 2)? (-1) : (cell + 2 * NR_COLS); //SOUTH
-    neighbours[(index+3) % 4] = (cell % NR_COLS > 1)? (cell - 2) : (-1);                     //WEST
-
-    return neighbours;
-
+    neighbours[(index+3) % 4] = (cell % NR_COLS > 1)? (cell - 2) : (-1);                     //WEST  
 }
 
 uint8_t get_value_at_cell(char *arr, uint16_t cell)
@@ -120,7 +115,7 @@ void generate_maze(char *matrix)
 {
     uint16_t unvisited_cells = (NR_ROWS / 2) * (NR_COLS / 2);
 
-    uint16_t stack [unvisited_cells];
+    uint16_t *stack = (uint16_t*) calloc(unvisited_cells, sizeof(uint16_t));
     char visited   [(NR_ROWS * NR_COLS) / 8];
     memset(visited, 0, (NR_ROWS * NR_COLS) / 8);
 
@@ -131,11 +126,11 @@ void generate_maze(char *matrix)
 
     set_value_at_cell(visited, start_cell, 1);
     
-    //freeRam();
-
+    int16_t *neighbours = (int16_t*) malloc(4 * sizeof(int16_t));
+    
     while(unvisited_cells)
-    {
-            int16_t *neighbours = find_neighbours(current_cell);
+    {       
+            find_neighbours(neighbours, current_cell);
             if(checkVisited(visited, neighbours))
             {
                 clear_wall(matrix, current_cell, neighbours[0]);
@@ -152,9 +147,11 @@ void generate_maze(char *matrix)
                 current_cell = *sp;
                 *sp = 0x00;
             }
-
     }
 
+
+    free(stack);
+    free(neighbours);
     print_matrix(matrix);
 
 }
