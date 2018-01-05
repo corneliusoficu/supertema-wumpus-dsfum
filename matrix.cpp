@@ -112,9 +112,10 @@ void clear_wall(char *matrix, uint16_t current_cell, int16_t destination_cell)
     set_value_at_cell(matrix, wall_cell, 0);
 }
 
-void generate_maze(char *matrix)
+void generate_maze(char *matrix, uint16_t &total_available_cells)
 {
     uint16_t unvisited_cells = (NR_ROWS / 2) * (NR_COLS / 2);
+    total_available_cells += unvisited_cells;
 
     uint16_t stack[unvisited_cells];
     int16_t neighbours[4];
@@ -134,7 +135,8 @@ void generate_maze(char *matrix)
             if(checkVisited(visited, neighbours))
             {
                 clear_wall(matrix, current_cell, neighbours[0]);
-
+                total_available_cells++;
+                
                 current_cell = neighbours[0];
                 set_value_at_cell(visited, current_cell, 1);
 

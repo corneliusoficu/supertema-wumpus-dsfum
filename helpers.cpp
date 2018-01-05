@@ -21,3 +21,21 @@ void print_array(uint16_t *array, uint8_t size)
     Serial.println();
 }
 
+void delay_countdown(uint8_t delay_time)
+{
+    Serial.print(F("Waiting "));
+    Serial.print(delay_time);
+    Serial.println(F(" seconds..."));
+
+    delay(delay_time * 1000);
+
+}
+
+void clear_serial_monitor()
+{
+    Serial.write(27);       // ESC command
+    Serial.print("[2J");    // clear screen command
+    Serial.write(27);
+    Serial.print("[H");     // cursor to home command
+}
+
