@@ -1,22 +1,14 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-#define NR_ROWS 23
-#define NR_COLS 64
+#define START_CELL 64
 
-#include "Arduino.h"
+#include "printers.h"
 #include "helpers.h"
-
-// typedef struct
-// {
-// 	uint8_t x, y; //Node position - little waste of memory, but it allows faster generation
-// 	void *parent; //Pointer to parent node
-// 	char c; //Character to be displayed
-// 	char dirs; //Directions that still haven't been explored
-// } Node;
 
 void generate_maze  (char *matrix);
 void generate_matrix(char *matrix);
-void print_matrix   (char *matrix);
+void find_neighbours(int16_t *neighbours, int16_t cell);
+uint8_t get_value_at_cell(char *arr, uint16_t cell);
 
 #endif

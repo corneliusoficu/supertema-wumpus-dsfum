@@ -1,21 +1,21 @@
-#include "inc/matrix.h"
+#include "inc/game.h"
+
+char *matrix;
+uint16_t *points;
 
 void setup()
 {
-    Serial.begin(9600);
+    Serial.begin(74880);
     while(!Serial);
+
     randomSeed(analogRead(0));
-    Serial.println(F("Wumpus starting!"));
 
-    //TODO: Add test for good division!
+    Serial.println(F("Wumpus starting..."));
 
-    char matrix[(NR_ROWS * NR_COLS) / 8];
+    Serial.println(F("Generating maze..."));  
+
+    initialize_game(matrix, points);
     
-
-    generate_matrix(matrix);
-    //print_matrix(matrix);
-    generate_maze(matrix);
-
 }
 
 void loop()
