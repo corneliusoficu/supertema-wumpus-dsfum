@@ -22,6 +22,6 @@ void setup()
 void loop()
 {
     play_game(matrix, points);
-    delay(200);
+    delay(50);
     clear_serial_monitor();
 }

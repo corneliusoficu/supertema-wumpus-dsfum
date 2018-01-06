@@ -4,8 +4,9 @@
 #define POS_WUMPUS                       4
 #define POS_TREASURE                     5
 
-#define WUMPUS_MAXIMUM_UNVISITED_CELLS 100 
+#define ITEMS                            6
 
+#define WUMPUS_MAXIMUM_UNVISITED_CELLS 100 
 
 #include "matrix.h"
 

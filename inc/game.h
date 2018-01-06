@@ -1,8 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
 
-#define ITEMS            6
-
 #define START_GAME_DELAY 3
 
 #include "game_heuristics.h"
