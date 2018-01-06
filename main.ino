@@ -2,7 +2,6 @@
 
 char     *matrix;
 uint16_t *points;
-uint16_t total_available_cells;
 
 void setup()
 {
@@ -15,15 +14,14 @@ void setup()
 
     Serial.println(F("Generating maze..."));  
     freeRam();
-    initialize_game(&matrix, &points, total_available_cells);
-    play_game(matrix, points);
+    initialize_game(&matrix, &points);
+    // play_game(matrix, points);
 
-    Serial.println(total_available_cells);
 }
 
 void loop()
 {
-    // play_game(matrix, points);
-    // delay(500);
-    // clear_serial_monitor();
+    play_game(matrix, points);
+    delay(200);
+    clear_serial_monitor();
 }

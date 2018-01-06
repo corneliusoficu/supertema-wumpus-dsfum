@@ -69,10 +69,10 @@ void set_value_at_cell(char *bit_array, uint16_t cell, uint8_t value)
     }
 }
 
-uint8_t checkVisited(char *visited, int16_t *neighbours)
+uint8_t checkVisited(char *visited, int16_t *neighbours, uint16_t size)
 {
     int16_t *ptr = neighbours;
-    while(ptr < neighbours + 4)
+    while(ptr < neighbours + size)
     {
         if((*ptr != -1) && get_value_at_cell(visited, *ptr) == 0)
         {
@@ -112,10 +112,9 @@ void clear_wall(char *matrix, uint16_t current_cell, int16_t destination_cell)
     set_value_at_cell(matrix, wall_cell, 0);
 }
 
-void generate_maze(char *matrix, uint16_t &total_available_cells)
+void generate_maze(char *matrix)
 {
     uint16_t unvisited_cells = (NR_ROWS / 2) * (NR_COLS / 2);
-    total_available_cells += unvisited_cells;
 
     uint16_t stack[unvisited_cells];
     int16_t neighbours[4];
@@ -132,10 +131,9 @@ void generate_maze(char *matrix, uint16_t &total_available_cells)
     while(unvisited_cells)
     {  
             find_neighbours(neighbours, current_cell);
-            if(checkVisited(visited, neighbours))
+            if(checkVisited(visited, neighbours, 4))
             {
                 clear_wall(matrix, current_cell, neighbours[0]);
-                total_available_cells++;
                 
                 current_cell = neighbours[0];
                 set_value_at_cell(visited, current_cell, 1);

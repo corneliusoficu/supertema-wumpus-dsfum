@@ -11,7 +11,7 @@ void freeRam()
     Serial.println(F(" bytes"));
 }
 
-void print_array(uint16_t *array, uint8_t size)
+void print_array(int16_t *array, uint8_t size)
 {
     for(uint8_t index = 0; index < size; index++)
     {
