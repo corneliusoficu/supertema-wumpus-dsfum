@@ -11,5 +11,6 @@ char symbols[][24]    = {"♠", "♥", "♦", "♣", "Ö", "★"};
 void    initialize_game               (char **matrix, uint16_t **points);
 void    find_accesible_points         (char *matrix, uint16_t *positions, uint8_t count);
 uint8_t play_game                     (char *matrix, uint16_t *positions, uint8_t players);
+void    update_messages               (char messages[][20], uint8_t &len_messages);
 
 #endif

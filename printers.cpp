@@ -34,7 +34,7 @@ void print_matrix(char *matrix, uint8_t show_binary)
 }
 
 //TODO: Remove Duplicated code, maybe with callbacks.
-void print_matrix_with_positions(char *matrix, uint16_t *positions, char symbols[][24], uint8_t size)
+void print_matrix_with_positions(char *matrix, uint16_t *positions, char symbols[][24], uint8_t size, const char messages[][20], uint8_t nr_messages)
 {
     char *c;
     char wall = WALL_CHAR;
@@ -82,6 +82,14 @@ void print_matrix_with_positions(char *matrix, uint16_t *positions, char symbols
                 
                 
             }
+        }
+        if(messages != NULL)
+        {
+            if(row < nr_messages)
+            {
+                Serial.print(messages[row]);
+            }
+            
         }
 
         Serial.println();

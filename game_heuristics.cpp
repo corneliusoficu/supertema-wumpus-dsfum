@@ -1,9 +1,43 @@
 #include "inc/game_heuristics.h"
 
+uint16_t last_visited_cell[ITEMS - 1]  = {0, 0, 0, 0, 0};
+uint8_t  scores[ITEMS - 1]             = {0, 0, 0, 0, 0};
+uint8_t  current_move_index[ITEMS - 2] = {0, 0, 0, 0};
+uint8_t  latest_moves[ITEMS - 2][100];
 
-uint16_t last_visited_cell[ITEMS - 1]  = {0,0,0,0,0};
+void add_to_array(uint8_t *arr, uint8_t value, uint8_t player_index)
+{
+    uint8_t cur_byte = current_move_index[player_index] / 2;
+    uint8_t nibble   = current_move_index[player_index] % 2;
 
-extern uint16_t total_accesible_points;
+    if(nibble == 0)
+    {
+        arr[cur_byte] &= 0x0F;
+        arr[cur_byte] |= ((value << 4) & 0xF0);
+    }
+    else if(nibble == 1)
+    {
+        arr[cur_byte] &= 0xF0;
+        arr[cur_byte] |= (value & 0x0F);
+    }
+}
+
+uint8_t get_from_array(uint8_t *arr, uint8_t position)
+{
+    uint8_t cur_byte = current_move_index[player_index] / 2;
+    uint8_t nibble   = current_move_index[player_index] % 2;
+
+    if(nibble == 0)
+    {
+        uint8_t val = arr[cur_byte];
+        return val >> 4;
+    }
+    else  if(nibble == 1)
+    {
+        uint8_t val = arr[cur_byte];
+        return val & 0x0F;
+    }
+}
 
 void next_suitable_positions(char *matrix, int16_t curr_position, int16_t *next_available_positions, uint8_t nr_pos, uint8_t is_random)
 {   
@@ -78,6 +112,20 @@ uint16_t get_random_item(int16_t *arr, uint8_t size, uint8_t itm_index, uint16_t
     {
         if(*p != -1)
         {
+            if(size == 5)
+            {
+                if(*p == current_cell)
+                {
+                    uint16_t random_value = random(1, 101);
+                    if(random_value > 25)
+                    {
+                        p++;
+                        continue;
+                    }
+                }
+                
+            }
+            
             av_items[itm++] = *p;
             if(*p != last_visited_cell[itm_index])
             {
@@ -108,8 +156,16 @@ uint16_t get_random_item(int16_t *arr, uint8_t size, uint8_t itm_index, uint16_t
     }
 
     //TODO: Solve for standing
-    last_visited_cell[itm_index] = current_cell;
 
+    if(av_items[idx] != current_cell)
+    {
+        last_visited_cell[itm_index] = current_cell;
+    }
+    else if(itm - 1 == 1)
+    {
+        last_visited_cell[itm_index] = current_cell;
+    }
+    
     return av_items[idx];
 }
 
@@ -239,6 +295,8 @@ void dummy_iterate(char *matrix, uint16_t *current_move, uint8_t curr_index, uin
         next_suitable_positions(matrix, *current_move, neighbours, 5, 1);  
         *current_move = get_random_item(neighbours, 5, curr_index, *current_move);
     }
+
+
     
 }
 
