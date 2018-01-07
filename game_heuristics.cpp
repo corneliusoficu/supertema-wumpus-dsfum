@@ -1,5 +1,6 @@
 #include "inc/game_heuristics.h"
 
+
 uint16_t last_visited_cell[ITEMS - 1]  = {0,0,0,0,0};
 
 extern uint16_t total_accesible_points;
@@ -114,76 +115,49 @@ uint16_t get_random_item(int16_t *arr, uint8_t size, uint8_t itm_index, uint16_t
 
 uint16_t get_distance_between_maze_points(char *matrix, uint16_t src_cell, uint16_t dest_cell)
 {
-    freeRam();
-    Serial.print(src_cell);
-    Serial.print(" -> ");
-    Serial.print(dest_cell);
-    Serial.print(": ");
+
+    struct Node
+    {
+        uint16_t distance;
+        uint16_t cell;
+    };
+
+    QueueList <Node> queue;
     
-    int16_t  front = 0;
-    int16_t rear = 0;
-
-    uint16_t coordinates [50];
-    uint16_t distance [50];
-
     char visited[(NR_ROWS * NR_COLS) / 8];
     memset(visited, 0, (NR_ROWS * NR_COLS) / 8);
 
-    coordinates[rear] = src_cell;
-    distance[rear]    = 0;
-    
-    //PUSH
-    rear++;
+    Node node = {0, src_cell};
+    queue.push(node);
 
-    freeRam();
+    // freeRam();
     
-    while(!(front == -1 && rear == -1))
+    while(!queue.isEmpty())
     {
-        delay(1000);
-        uint16_t cell = pgm_read_word_near(coordinates + front);
-        uint16_t cell_distance = pgm_read_word_near(distance + front);
+        
+        node = queue.pop();
 
-        if(cell == dest_cell)
+        if(node.cell == dest_cell)
         {
-            return cell;
+            return node.distance;
         }
-
-        //POP
-        if(front == rear)
-        {
-            rear = front = -1;
-        }
-        else
-        {
-            front++;
-        }
-
-        Serial.println(cell);
-        Serial.print(front);
-        Serial.print(" ");
-        Serial.println(rear);
-        //print_array(coordinates, rear - 1);
 
         int16_t neighbours[4];
-        next_suitable_positions(matrix, cell, neighbours, 4, 0);
+        next_suitable_positions(matrix, node.cell, neighbours, 4, 0);
 
         for(uint8_t index = 0; index < 4; index++)
         {
-            if(!get_value_at_cell(visited, neighbours[index]))
+            if(neighbours[index] != -1)
             {
-                set_value_at_cell(visited, neighbours[index], 1);
-                coordinates[rear] = neighbours[index];
-                distance[rear]    = cell_distance + 1;
-                rear++;
+                if(!get_value_at_cell(visited, neighbours[index]))
+                {
+                    set_value_at_cell(visited, neighbours[index], 1);
+                    Node new_node = {node.distance + 1, (uint16_t)neighbours[index]};
+                    queue.push(new_node);
+                }
             }
-        }        
+        }
     }
-
-
-
-
-
-
 }
 
 uint16_t get_best_pos_to_escape(char *matrix, int16_t *arr, uint8_t size, uint8_t itm_index, uint16_t current_cell, uint16_t away_cell)
@@ -196,25 +170,16 @@ uint16_t get_best_pos_to_escape(char *matrix, int16_t *arr, uint8_t size, uint8_
     {
         if(*p != -1)
         {
-            // Serial.print((*p));
-            // Serial.print(" -> ");
-            
             uint16_t dst = get_distance_between_maze_points(matrix, (*p), away_cell);
-            // Serial.print(away_cell);
 
             if(dst > max_distance)
             {
                 max_distance = dst;
                 max_distance_pos = *(p);
             }
-
-            // Serial.print(": ");
-            // Serial.print(dst);
-            // Serial.print(" ");
         }
         p++;
     }
-    // Serial.println();
 
     last_visited_cell[itm_index] = current_cell;
     return max_distance_pos;
@@ -266,16 +231,13 @@ void dummy_iterate(char *matrix, uint16_t *current_move, uint8_t curr_index, uin
     }
     else if(is_wumpus_too_close(matrix, *current_move, wumpus_pos) == 1)
     {
-        // Serial.println("Este prea apropae!");
-        next_suitable_positions(matrix, *current_move, neighbours, 4, 1);
-        *current_move = get_random_item(neighbours, 4, curr_index, *current_move);
-        //delay(1000);
-        //*current_move = get_best_pos_to_escape(matrix, neighbours, 4, curr_index, *current_move, wumpus_pos);
+        next_suitable_positions(matrix, *current_move, neighbours, 5, 1);
+        *current_move = get_best_pos_to_escape(matrix, neighbours, 5, curr_index, *current_move, wumpus_pos);
     }
     else
     {
-        next_suitable_positions(matrix, *current_move, neighbours, 4, 1);  
-        *current_move = get_random_item(neighbours, 4, curr_index, *current_move);
+        next_suitable_positions(matrix, *current_move, neighbours, 5, 1);  
+        *current_move = get_random_item(neighbours, 5, curr_index, *current_move);
     }
     
 }

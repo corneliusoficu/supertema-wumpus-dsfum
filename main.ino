@@ -17,6 +17,10 @@ void setup()
     initialize_game(&matrix, &points);
     // play_game(matrix, points);
 
+    uint16_t cell1, cell2;
+    find_accesible_points(matrix, &cell1, 1);
+    find_accesible_points(matrix, &cell2, 1);
+
 }
 
 void loop()
@@ -25,6 +29,6 @@ void loop()
     find_new_player_positions(matrix, points, ITEMS - 1);
     print_matrix_with_positions(matrix, points, symbols, ITEMS);
 
-    delay(200);
-    // clear_serial_monitor();
+    delay(100);
+    clear_serial_monitor();
 }

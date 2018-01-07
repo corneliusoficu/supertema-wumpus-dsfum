@@ -8,6 +8,7 @@
 
 #define WUMPUS_MAXIMUM_UNVISITED_CELLS 100 
 
+#include <QueueList.h>
 #include "matrix.h"
 
 void dummy_iterate(char *matrix, uint16_t *current_move, uint8_t curr_index, uint16_t wumpus_pos);

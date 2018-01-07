@@ -31,7 +31,6 @@ void initialize_game(char **matrix, uint16_t **points)
 
 void find_accesible_points(char *matrix, uint16_t *positions, uint8_t nr_positions)
 {
-    uint16_t nr_bytes = NR_ROWS * NR_COLS;
     uint8_t  count = 0;
     uint16_t random_point;
 
