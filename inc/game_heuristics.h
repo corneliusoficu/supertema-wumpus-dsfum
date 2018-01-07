@@ -13,5 +13,8 @@
 
 void dummy_iterate(char *matrix, uint16_t *current_move, uint8_t curr_index, uint16_t wumpus_pos);
 uint16_t get_distance_between_maze_points(char *matrix, uint16_t src_cell, uint16_t dest_cell);
+void add_to_array(uint8_t value, uint8_t player_index);
+uint8_t get_from_array(uint8_t position, uint8_t player_index);
+void print_moves(uint8_t player);
 
 #endif

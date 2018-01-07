@@ -1,40 +1,100 @@
 #include "inc/game_heuristics.h"
 
+#define CIRCULAR_LIST_SIZE 20
+
 uint16_t last_visited_cell[ITEMS - 1]  = {0, 0, 0, 0, 0};
 uint8_t  scores[ITEMS - 1]             = {0, 0, 0, 0, 0};
 uint8_t  current_move_index[ITEMS - 2] = {0, 0, 0, 0};
-uint8_t  latest_moves[ITEMS - 2][100];
+uint8_t  is_circular[ITEMS - 2]        = {0, 0, 0, 0};
+uint8_t  latest_moves[ITEMS - 2][CIRCULAR_LIST_SIZE];
 
-void add_to_array(uint8_t *arr, uint8_t value, uint8_t player_index)
+void print_moves(uint8_t player)
 {
+    for(int8_t index = current_move_index[player] - 1; index >= 0; index--)
+    {
+       uint8_t move = get_from_array(index, player);
+       if(move == 0)
+       {
+           Serial.print(F("N"));
+       }
+       else if(move == 1)
+       {
+           Serial.print(F("S"));
+       }
+       else if(move == 2)
+       {
+           Serial.print(F("W"));
+       }
+       else if(move == 3)
+       {
+           Serial.print(F("E"));
+       }
+    }
+    if(is_circular[player])
+    {
+        for(int16_t index = CIRCULAR_LIST_SIZE - 1; index >= current_move_index[player] + 1; index --)
+        {
+            uint8_t move = get_from_array(index, player);
+            if(move == 0)
+            {
+                Serial.print(F("N"));
+            }
+            else if(move == 1)
+            {
+                Serial.print(F("S"));
+            }
+            else if(move == 2)
+            {
+                Serial.print(F("W"));
+            }
+            else if(move == 3)
+            {
+                Serial.print(F("E"));
+            }
+        }
+    }
+    Serial.println();
+}
+
+void add_to_array(uint8_t value, uint8_t player_index)
+{
+
     uint8_t cur_byte = current_move_index[player_index] / 2;
     uint8_t nibble   = current_move_index[player_index] % 2;
 
     if(nibble == 0)
     {
-        arr[cur_byte] &= 0x0F;
-        arr[cur_byte] |= ((value << 4) & 0xF0);
+        latest_moves[player_index][cur_byte] &= 0x0F;
+        latest_moves[player_index][cur_byte] |= ((value << 4) & 0xF0);
     }
     else if(nibble == 1)
     {
-        arr[cur_byte] &= 0xF0;
-        arr[cur_byte] |= (value & 0x0F);
+        latest_moves[player_index][cur_byte] &= 0xF0;
+        latest_moves[player_index][cur_byte] |= (value & 0x0F);
     }
+
+    
+    current_move_index[player_index] = (current_move_index[player_index] + 1) % CIRCULAR_LIST_SIZE;
+    if(current_move_index[player_index] == 0)
+    {
+        is_circular[player_index] = 1;
+    }
+
 }
 
-uint8_t get_from_array(uint8_t *arr, uint8_t position)
+uint8_t get_from_array(uint8_t position, uint8_t player_index)
 {
-    uint8_t cur_byte = current_move_index[player_index] / 2;
-    uint8_t nibble   = current_move_index[player_index] % 2;
+    uint8_t cur_byte = position / 2;
+    uint8_t nibble   = position % 2;
 
     if(nibble == 0)
     {
-        uint8_t val = arr[cur_byte];
+        uint8_t val = latest_moves[player_index][cur_byte];
         return val >> 4;
     }
     else  if(nibble == 1)
     {
-        uint8_t val = arr[cur_byte];
+        uint8_t val = latest_moves[player_index][cur_byte];
         return val & 0x0F;
     }
 }
@@ -275,10 +335,37 @@ uint8_t is_wumpus_too_close(char *matrix, uint16_t src_cell, uint16_t dest_cell)
     return ret_val;
 }
 
+uint8_t obtain_heading(uint16_t current_move, uint16_t previous_move)
+{
+    int16_t move = current_move - previous_move;
+    uint8_t heading = 0;
+    if(move + NR_COLS == 0)      //NORTH
+    {
+        heading = 0;
+    }
+    else if(move - NR_COLS == 0) //SOUTH
+    {
+        heading = 1;
+    }
+    else if(move + 1 == 0)     //WEST`
+    {
+        heading = 2;
+    }
+    else if(move - 1 == 0)     //EAST
+    {
+        heading = 3;
+    }
+    return heading;
+
+
+}
+
 void dummy_iterate(char *matrix, uint16_t *current_move, uint8_t curr_index, uint16_t wumpus_pos)
 {
     
     int16_t neighbours[5];
+
+    uint16_t previous_move = *current_move;
 
     if(wumpus_pos == 0)
     {
@@ -296,8 +383,15 @@ void dummy_iterate(char *matrix, uint16_t *current_move, uint8_t curr_index, uin
         *current_move = get_random_item(neighbours, 5, curr_index, *current_move);
     }
 
-
     
+
+    if(wumpus_pos !=0 && *current_move != previous_move)
+    {   
+        uint8_t heading = obtain_heading(*current_move, previous_move);
+        add_to_array(heading, curr_index);
+    }
+    
+
 }
 
 

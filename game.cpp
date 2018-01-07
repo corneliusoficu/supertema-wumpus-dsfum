@@ -3,6 +3,25 @@
 int8_t winner      = -1;
 uint8_t wumpus_left = ITEMS - 2;
 uint8_t in_game[ITEMS - 2] = {1, 1, 1, 1};
+extern uint8_t  scores[ITEMS - 1];
+
+void create_new_instance(char *matrix, uint16_t *points)
+{
+    generate_matrix(matrix);
+    generate_maze(matrix);
+
+    find_accesible_points(matrix, points, ITEMS);
+
+    store_matrix(MATRIX_ADRESS, matrix, (NR_ROWS * NR_COLS) / 8);
+    store_positions(POSITIONS_ADDRESS, points, ITEMS);
+
+    const char empty_scores[] = {0, 0, 0, 0, 0};
+    store_matrix(SCOREBOARD_ADRESS, empty_scores, 5);
+
+    store_matrix(WUMPUS_LEFT_ADDRESS, &wumpus_left, 1);
+    store_matrix(IN_GAME_ADDRESS, in_game, ITEMS - 2);
+
+}
 
 void initialize_game(char **matrix, uint16_t **points)
 {
@@ -11,13 +30,33 @@ void initialize_game(char **matrix, uint16_t **points)
         uint8_t size_matrix = (NR_ROWS * NR_COLS) / 8;
         *matrix = (char*)     malloc(size_matrix * sizeof(char));
         *points = (uint16_t*) malloc(ITEMS * sizeof(uint16_t));
+
+        // EEPROM.write(DIFFERENTIATION_BYTE_ADRESS, 0x00);
+        if(!is_differentiation_byte_in_eeprom())
+        {
+            Serial.println("No configuration found in eeprom, creating a new one!");
+
+            write_differentiaion_byte_in_eeprom();
+
+            create_new_instance(*matrix, *points);
+            
+        }
+        else
+        {
+            Serial.println("Found cofiguration in eeprom...");
+            read_matrix   (MATRIX_ADRESS, *matrix, (NR_ROWS * NR_COLS) / 8);
+            read_positions(POSITIONS_ADDRESS, *points, ITEMS);
+
+            read_matrix(SCOREBOARD_ADRESS, scores, ITEMS - 1);
+            read_matrix(WUMPUS_LEFT_ADDRESS, &wumpus_left, 1);
+            read_matrix(IN_GAME_ADDRESS, in_game, ITEMS - 2);
+
+        }
     }
-    
-    generate_matrix(*matrix);
-    generate_maze(*matrix);
-
-    find_accesible_points(*matrix, *points, ITEMS);
-
+    else
+    {
+        create_new_instance(*matrix, *points);
+    }
 }
 
 void find_accesible_points(char *matrix, uint16_t *positions, uint8_t nr_positions)
@@ -87,7 +126,6 @@ void find_new_player_positions(char *matrix, uint16_t *positions, uint8_t nr_pla
                 }   
             } 
         }
-        
     }
 }
 
