@@ -52,8 +52,9 @@ void loop()
     if(iterations == 0)
     {
         store_positions(POSITIONS_ADDRESS, positions, ITEMS);
-        store_matrix(WUMPUS_LEFT_ADDRESS, &wumpus_left, 1);
-        store_matrix(IN_GAME_ADDRESS, in_game, ITEMS - 2);
+        print_int_array(positions, ITEMS);
+        store_matrix(WUMPUS_LEFT_ADDRESS, (char*)&wumpus_left, 1);
+        store_matrix(IN_GAME_ADDRESS, (char*)in_game, ITEMS - 2);
     }
     
     if(winner != -1)

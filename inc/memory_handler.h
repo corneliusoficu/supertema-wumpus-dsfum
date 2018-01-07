@@ -7,14 +7,14 @@
 #include <EEPROMex.h>
 #include <EEPROMvar.h>
 
-void store_matrix(uint8_t byte_location, char *matrix, uint8_t size);
-void read_matrix (uint8_t byte_location, char *matrix, uint8_t size);
+void store_matrix(uint16_t byte_location, char *matrix, uint8_t size);
+void read_matrix (uint16_t byte_location, char *matrix, uint8_t size);
 
 uint8_t is_differentiation_byte_in_eeprom();
 void write_differentiaion_byte_in_eeprom();
 
-void store_positions(uint8_t byte_location, uint16_t *positions, uint8_t size);
-void read_positions(uint8_t byte_location, uint16_t *positions, uint8_t size);
+void store_positions(uint16_t byte_location, uint16_t *positions, uint8_t size);
+void read_positions(uint16_t byte_location, uint16_t *positions, uint8_t size);
 
 #endif
 

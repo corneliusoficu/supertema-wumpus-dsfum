@@ -1,6 +1,6 @@
 #include "inc/memory_handler.h"
 
-void store_matrix(uint8_t byte_location, char *matrix, uint8_t size)
+void store_matrix(uint16_t byte_location, char *matrix, uint8_t size)
 {
     for(uint8_t byte_index = 0; byte_index < size; byte_index++)
     {
@@ -8,23 +8,17 @@ void store_matrix(uint8_t byte_location, char *matrix, uint8_t size)
     }
 }
 
-void store_positions(uint8_t byte_location, uint16_t *positions, uint8_t size)
+void store_positions(uint16_t byte_location, uint16_t *positions, uint8_t size)
 {
-    for(uint8_t byte_index = 0; byte_index < 2 * size; byte_index+=2)
-    {
-        EEPROM.updateInt(byte_location + byte_index , positions[byte_index]);
-    }
+    EEPROM.writeBlock<uint16_t>(byte_location, positions, size);
 }
 
-void read_positions(uint8_t byte_location, uint16_t *positions, uint8_t size)
+void read_positions(uint16_t byte_location, uint16_t *positions, uint8_t size)
 {
-    for(uint8_t byte_index = 0; byte_index < 2 * size; byte_index+=2)
-    {
-        positions[byte_index] = EEPROM.readInt(byte_location + byte_index);
-    }
+    EEPROM.readBlock<uint16_t>(byte_location, positions, size);
 }
 
-void read_matrix(uint8_t byte_location, char *matrix, uint8_t size)
+void read_matrix(uint16_t byte_location, char *matrix, uint8_t size)
 {
     for(uint8_t byte_index = 0; byte_index < size; byte_index++)
     {

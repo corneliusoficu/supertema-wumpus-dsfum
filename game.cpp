@@ -16,10 +16,10 @@ void create_new_instance(char *matrix, uint16_t *points)
     store_positions(POSITIONS_ADDRESS, points, ITEMS);
 
     const char empty_scores[] = {0, 0, 0, 0, 0};
-    store_matrix(SCOREBOARD_ADRESS, empty_scores, 5);
+    store_matrix(SCOREBOARD_ADRESS, (char*)empty_scores, 5);
 
-    store_matrix(WUMPUS_LEFT_ADDRESS, &wumpus_left, 1);
-    store_matrix(IN_GAME_ADDRESS, in_game, ITEMS - 2);
+    store_matrix(WUMPUS_LEFT_ADDRESS, (char*)&wumpus_left, 1);
+    store_matrix(IN_GAME_ADDRESS, (char*)in_game, ITEMS - 2);
 
 }
 
@@ -31,7 +31,6 @@ void initialize_game(char **matrix, uint16_t **points)
         *matrix = (char*)     malloc(size_matrix * sizeof(char));
         *points = (uint16_t*) malloc(ITEMS * sizeof(uint16_t));
 
-        // EEPROM.write(DIFFERENTIATION_BYTE_ADRESS, 0x00);
         if(!is_differentiation_byte_in_eeprom())
         {
             Serial.println("No configuration found in eeprom, creating a new one!");
@@ -47,9 +46,14 @@ void initialize_game(char **matrix, uint16_t **points)
             read_matrix   (MATRIX_ADRESS, *matrix, (NR_ROWS * NR_COLS) / 8);
             read_positions(POSITIONS_ADDRESS, *points, ITEMS);
 
-            read_matrix(SCOREBOARD_ADRESS, scores, ITEMS - 1);
-            read_matrix(WUMPUS_LEFT_ADDRESS, &wumpus_left, 1);
-            read_matrix(IN_GAME_ADDRESS, in_game, ITEMS - 2);
+            read_matrix(SCOREBOARD_ADRESS, (char*)scores, ITEMS - 1);
+            read_matrix(WUMPUS_LEFT_ADDRESS, (char*)&wumpus_left, 1);
+            read_matrix(IN_GAME_ADDRESS, (char*)in_game, ITEMS - 2);
+
+            print_int_array(*points, ITEMS);
+
+            Serial.println(wumpus_left);
+            print_array(in_game, ITEMS - 2);
 
         }
     }
