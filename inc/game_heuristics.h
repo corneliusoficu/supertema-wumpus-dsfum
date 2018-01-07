@@ -10,6 +10,7 @@
 
 #include "matrix.h"
 
-void move_player(char *matrix, uint16_t *current_move, uint8_t index);
+void dummy_iterate(char *matrix, uint16_t *current_move, uint8_t curr_index, uint16_t wumpus_pos);
+uint16_t get_distance_between_maze_points(char *matrix, uint16_t src_cell, uint16_t dest_cell);
 
 #endif

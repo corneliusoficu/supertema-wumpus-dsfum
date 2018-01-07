@@ -25,6 +25,8 @@ void initialize_game(char **matrix, uint16_t **points)
     print_matrix_with_positions(*matrix, *points, symbols, ITEMS);
 
     //delay_countdown(3);
+
+    // print_matrix(*matrix, 1);
 }
 
 void find_accesible_points(char *matrix, uint16_t *positions, uint8_t nr_positions)
@@ -49,16 +51,18 @@ void find_new_player_positions(char *matrix, uint16_t *positions, uint8_t nr_pla
 {
     for(int index = 0; index < nr_players; index++)
     {
-        move_player(matrix, positions + index, index);
+        if(index == POS_WUMPUS)
+        {
+            dummy_iterate(matrix, positions + index, index, 0);
+        }
+        else
+        {
+            dummy_iterate(matrix, positions + index, index, *(positions + POS_WUMPUS));
+        }
+        
     }
 }
 
-uint8_t play_game(char *matrix, uint16_t *positions)
-{
-    find_new_player_positions(matrix, positions, ITEMS - 1);
-    print_matrix_with_positions(matrix, positions, symbols, ITEMS);
-    return 1;
-}
 
 
 

@@ -1,5 +1,7 @@
 #include "inc/matrix.h"
 
+uint16_t total_accesible_points;
+
 void generate_matrix(char *matrix)
 {
     //freeRam();
@@ -116,6 +118,8 @@ void generate_maze(char *matrix)
 {
     uint16_t unvisited_cells = (NR_ROWS / 2) * (NR_COLS / 2);
 
+    total_accesible_points += unvisited_cells;
+
     uint16_t stack[unvisited_cells];
     int16_t neighbours[4];
     char visited   [(NR_ROWS * NR_COLS) / 8];
@@ -134,6 +138,7 @@ void generate_maze(char *matrix)
             if(checkVisited(visited, neighbours, 4))
             {
                 clear_wall(matrix, current_cell, neighbours[0]);
+                total_accesible_points += 1;
                 
                 current_cell = neighbours[0];
                 set_value_at_cell(visited, current_cell, 1);

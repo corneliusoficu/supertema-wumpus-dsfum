@@ -13,7 +13,7 @@ void setup()
     Serial.println(F("Wumpus starting..."));
 
     Serial.println(F("Generating maze..."));  
-    freeRam();
+    // freeRam();
     initialize_game(&matrix, &points);
     // play_game(matrix, points);
 
@@ -21,7 +21,10 @@ void setup()
 
 void loop()
 {
-    play_game(matrix, points);
-    delay(50);
-    clear_serial_monitor();
+
+    find_new_player_positions(matrix, points, ITEMS - 1);
+    print_matrix_with_positions(matrix, points, symbols, ITEMS);
+
+    delay(200);
+    // clear_serial_monitor();
 }
